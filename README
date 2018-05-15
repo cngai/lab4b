@@ -1,0 +1,49 @@
+NAME: Christopher Ngai
+EMAIL: cngai1223@gmail.com
+ID: 404795904
+
+********************
+* CONTENTS OF FILE *
+********************
+
+lab4b.c:
+	lab4b.c is a C source file that uses the AIO and GPIO functions of the MRAA library to analyze input from a temperature sensor and buzzer sensor attached to a
+	BeagleBone. The program takes in three possible command-line arguments: period, scale, and log. The period argument specifies the rate at which the temperature
+	sensor detects the ambient temperature and reports it to STDOUT (and the log file) with the local time and temperature formatted according to the spec. The
+	program also converts the sensor value into the proper temperature. The scale argument specifies whether the temperature should initially be reported in Celsius or
+	Fahrenheit. The log argument specifies the name of a log file that the program should create in order to store all the written reports regarding the time, temperature,
+	and commands inputted via STDIN. While the program is generating these reports, the program could accept any of the following commands: SCALE=F, SCALE=C, PERIOD=seconds,
+	STOP, START, LOG line of text, and OFF. The SCALE=F and SCALE=C commands change the scale to either Fahrenheit or Celsius, respectively, and continues generating reports
+	with the new scale. The PERIOD=seconds command changes the period duration to the set amount of seconds specified and continues generating reports at the new period
+	rate. The STOP command should cause the program to stop generating reports but should continue processing input commands. The START command should cause the program
+	to resume if the program had previously stopped. THE LOG line of text argument simply just logs the command into the log file. The OFF command prints a shutdown message
+	to the log file with the final time and exits the program. Similarly, once per period, the program checks the state of the buzzer and if it is pushed, print a shutdown
+	message to the log file with the final time and exit the program.
+
+Makefile:
+	Makefile is a file that contains the following targets: default, check, clean, and dist. The default target builds the lab4b executable from the lab4b.c source file. The
+	check target executes a series of smoke tests to test the basic commands of the program. The clean target removes the proper contents from the directory that the
+	Makefile creates. The dist target builds the tarball with the necessary contents that will be submitted.
+
+*********************
+* OTHER INFORMATION *
+*********************
+
+Manual Page for strtok Function:
+	https://www.tutorialspoint.com/c_standard_library/c_function_strtok.htm
+
+	This website helped me understand how to use the strtok function. Basically, the strtok has two parameters: a pointer to a char array and a some const char delimeter.
+	The pointer to a char array points to some char array that the function will modify and break down into "tokens." The delimeter is some char that determines what
+	distinguishes each token from another. By passing NULL into the first parameter, the function continues iterating through the originally inputted char array until there
+	are no tokens left. If there are no tokens left, the function returns NULL.
+
+Example of how to use memset:
+	https://www.geeksforgeeks.org/memset-c-example/
+
+	This website helped me understand how to use the memset function. I had trouble correctly processing commands that were shorter (byte-wise) than the previously inputted
+	command (e.g. processing STOP [5 bytes] after processing PERIOD=3 [9 bytes] determines invalid command given). I realized my issue was that my char buffer that held the
+	input bytes by reading from STDIN and would stay there even after the next read. If the read from STDIN returned less bytes than what was previously stored in the buffer,
+	there would be leftover bytes from the previous read still in the buffer. This caused the strtok function to process the read as two separate tokens (commands) and would
+	first process the initial command, but would then try to process the leftover bytes as a command and would subsequently determine it to be an invalid command (e.g.
+	processing STOP after PERIOD=3 would process STOP and then D=3 as the following command). The memset function helped me to essentially reset the buffer after every read
+	so that there would be no leftover bytes in my char buffer.
